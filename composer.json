@@ -1,0 +1,25 @@
+{
+  "name": "vendor_name/work-flow",
+  "description": "description",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "dparadiz",
+      "email": "email@example.com"
+    }
+  ],
+  "require": {
+    "psr/http-message": "^1.0",
+    "psr/http-server-middleware": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Workflow\\" : "src/"
+    }
+  },
+  "require-dev": {
+    "mockery/mockery": "^1.4",
+    "phpunit/phpunit": "^9"
+  }
+}
