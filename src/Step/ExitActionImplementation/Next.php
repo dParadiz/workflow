@@ -1,11 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Workflow\Step\ExitActionImplementation;
 
 use Workflow\Context;
 use Workflow\Step\ExitAction;
 
-class Next implements ExitAction
+final class Next implements ExitAction
 {
     public function __construct(private string $nextStepName = '')
     {

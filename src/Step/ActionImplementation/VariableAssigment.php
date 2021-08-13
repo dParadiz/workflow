@@ -1,11 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Workflow\Step\ActionImplementation;
 
 use Workflow\Context;
 use Workflow\Step\Action;
 
-class VariableAssigment implements Action
+final class VariableAssigment implements Action
 {
     public function __construct(private array $assignments = [])
     {

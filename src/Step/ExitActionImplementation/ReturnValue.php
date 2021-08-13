@@ -1,11 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Workflow\Step\ExitActionImplementation;
 
 use Workflow\Context;
 use Workflow\Step;
 
-class ReturnValue implements Step\ExitAction
+final class ReturnValue implements Step\ExitAction
 {
     public function __construct(private string $variable)
     {

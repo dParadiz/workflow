@@ -1,12 +1,10 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace Workflow;
 
 use JetBrains\PhpStorm\Pure;
 use Workflow\Step\Action;
 use Workflow\Step\ExitAction;
-use Workflow\Step\ExitActionImplementation\Assign;
 
 final class  Step
 {

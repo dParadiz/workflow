@@ -1,5 +1,4 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace Workflow;
 
@@ -46,6 +45,12 @@ final class Workflow
         return $this->executionSteps;
     }
 
+    public function reset(): void
+    {
+        $this->currentStep = array_key_first($this->steps);
+        $this->executionSteps = [];
+    }
+
     private function setCurrentStep(string $stepName)
     {
         if ($stepName === '') {
@@ -61,5 +66,4 @@ final class Workflow
 
         $this->currentStep = Step::END_STEP_NAME;
     }
-
 }

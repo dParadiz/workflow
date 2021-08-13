@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Workflow\Step\ActionImplementation;
 
@@ -6,7 +6,7 @@ use Workflow\Context;
 use Workflow\Step\Action;
 use Workflow\Step\Decision;
 
-class ConditionalJump implements Action
+final class ConditionalJump implements Action
 {
     /**
      * @param Decision[] $decisions

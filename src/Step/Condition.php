@@ -1,10 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Workflow\Step;
 
 use Workflow\Context;
 
-class Condition
+final class Condition
 {
     public function __construct(private string $variable, private string $operator, private mixed $value)
     {
