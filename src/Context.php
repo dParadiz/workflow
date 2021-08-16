@@ -18,4 +18,9 @@ final class Context
     {
         return $this->data[$variable];
     }
+
+    public function isVariableSet(string $variable): bool
+    {
+        return isset($this->data[$variable]);
+    }
 }

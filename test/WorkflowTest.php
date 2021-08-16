@@ -1,7 +1,5 @@
 <?php
 
-
-use JetBrains\PhpStorm\Pure;
 use PHPUnit\Framework\TestCase;
 use Workflow\Step\ExitActionImplementation\Next;
 use Workflow\Step\ExitActionImplementation\ReturnValue;
@@ -83,5 +81,31 @@ class WorkflowTest extends TestCase
 
         static::assertEquals(['step1', 'step2', 'step3'], $workflow->getExecutionSteps());
 
+    }
+
+    public function test_variable_assigment()
+    {
+        $workflow = new \Workflow\Workflow();
+
+        $context = new \Workflow\Context();
+        $context->assign('a', 1);
+
+        $workflow->addStep((new \Workflow\Step('step1')));
+        $workflow->addStep((new \Workflow\Step('step2'))->withAction(new \Workflow\Step\ActionImplementation\VariableAssigment([
+            'test' => 123,
+            'test2' => 3,
+            'test3' => '${ test  - test2}',
+            'test4' => '${ (string)test  . (string)test2}'
+        ])));
+        $workflow->addStep(new \Workflow\Step('step3'));
+
+
+        $workflow->execute($context);
+
+        static::assertEquals(['step1', 'step2', 'step3'], $workflow->getExecutionSteps());
+
+        static::assertEquals(123, $context->getVariableValue('test'));
+        static::assertEquals(120, $context->getVariableValue('test3'));
+        static::assertEquals(1233, $context->getVariableValue('test4'));
     }
 }
