@@ -71,8 +71,8 @@ class WorkflowTest extends TestCase
 
         $workflow->addStep((new \Workflow\Step('step1')));
         $workflow->addStep((new \Workflow\Step('step2'))->withAction(new \Workflow\Step\ActionImplementation\ConditionalJump([
-            new \Workflow\Step\Decision(new \Workflow\Step\Condition('a !==  1'), \Workflow\Step::END_STEP_NAME),
-            new \Workflow\Step\Decision(new \Workflow\Step\Condition('a ===  1'), 'step4'),
+            new \Workflow\Step\Decision(new \Workflow\Step\Condition('${a !==  1}'), \Workflow\Step::END_STEP_NAME),
+            new \Workflow\Step\Decision(new \Workflow\Step\Condition('${a ===  1}'), 'step4'),
         ])));
         $workflow->addStep(new \Workflow\Step('step3'));
         $workflow->addStep(new \Workflow\Step('step4'));
