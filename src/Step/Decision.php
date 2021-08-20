@@ -2,10 +2,12 @@
 
 namespace Workflow\Step;
 
+use Closure;
+
 final class Decision
 {
 
-    public function __construct(public Condition $condition, public string $step)
+    public function __construct(public Closure $condition, public string $step)
     {
     }
 }

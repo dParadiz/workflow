@@ -14,8 +14,6 @@ final class Process implements Action
 
     public function execute(Context $context): mixed
     {
-        $procedure = $this->procedure;
-        return $procedure($context);
-
+        return ($this->procedure)($context);
     }
 }

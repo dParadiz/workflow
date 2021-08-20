@@ -20,7 +20,7 @@ final class ConditionalJump implements Action
     public function execute(Context $context): string
     {
         foreach ($this->decisions as $decision) {
-            if ($decision->condition->isSatisfiedBy($context)) {
+            if (($decision->condition)($context)) {
                 return $decision->step;
             }
         }

@@ -12,38 +12,58 @@ class WorkflowTest extends TestCase
         $context = new \Workflow\Context();
         $workflow = new \Workflow\Workflow();
 
-        $workflow->addStep(new \Workflow\Step('step1'));
-        $workflow->addStep(new \Workflow\Step('step2'));
-        $workflow->addStep(new \Workflow\Step('step3'));
+        $workflow->addStep(
+            (new \Workflow\Step('step1'))
+                ->withAction(new \Workflow\Step\ActionImplementation\VariableAssigment(['a' => 'step1']))
+        );
 
-        $workflow->execute($context);
+        $workflow->addStep((new \Workflow\Step('step2'))
+            ->withAction(new \Workflow\Step\ActionImplementation\VariableAssigment([
+                'a' => fn (\Workflow\Context $context) => $context->getVariableValue('a') . ' step2'
+            ]))
+        );
+        $workflow->addStep((new \Workflow\Step('step3'))
+            ->withAction(new \Workflow\Step\ActionImplementation\VariableAssigment([
+                'a' => fn (\Workflow\Context $context) => $context->getVariableValue('a') . ' step3'
+            ]))
+            ->withExitAction(new ReturnValue('a'))
+        );
 
-        static::assertEquals(['step1', 'step2', 'step3'], $workflow->getExecutionSteps());
+        $result = $workflow->execute($context);
+
+        static::assertEquals('step1 step2 step3', $result);
     }
 
 
-    public function test_flow_control_execution()
+    public function test_controlled_flow_execution()
     {
         $context = new \Workflow\Context();
         $workflow = new \Workflow\Workflow();
 
         $step1 = new \Workflow\Step('step1');
-        $step1->withExitAction(new Next('step3'));
+        $step1->withAction(new \Workflow\Step\ActionImplementation\VariableAssigment(['a' => 'step1']))
+            ->withExitAction(new Next('step3'));
 
         $step3 = new \Workflow\Step('step3');
-        $step3->withExitAction(new Next('step2'));
+        $step3->withAction(
+            new \Workflow\Step\ActionImplementation\VariableAssigment([
+                    'a' => fn (\Workflow\Context $context) => $context->getVariableValue('a') . ' step3']
+            ))->withExitAction(new Next('step2'));
 
         $step2 = new \Workflow\Step('step2');
-        $step2->withExitAction(new Next('end'));
+        $step2->withAction(
+            new \Workflow\Step\ActionImplementation\VariableAssigment(
+                ['a' => fn (\Workflow\Context $context) => $context->getVariableValue('a') . ' step2']
+            ))->withExitAction(new ReturnValue('a'));
 
 
         $workflow->addStep($step1);
         $workflow->addStep($step2);
         $workflow->addStep($step3);
 
-        $workflow->execute($context);
+        $result = $workflow->execute($context);
 
-        static::assertEquals(['step1', 'step3', 'step2'], $workflow->getExecutionSteps());
+        static::assertEquals('step1 step3 step2', $result);
     }
 
     public function test_return_value()
@@ -52,13 +72,10 @@ class WorkflowTest extends TestCase
         $context->assign('a', 2);
         $workflow = new \Workflow\Workflow();
 
-        $workflow->addStep(new \Workflow\Step('step1'));
-        $workflow->addStep((new \Workflow\Step('step2'))->withExitAction(new ReturnValue('a')));
-        $workflow->addStep(new \Workflow\Step('step3'));
+        $workflow->addStep((new \Workflow\Step('step1'))->withExitAction(new ReturnValue('a')));
 
         $value = $workflow->execute($context);
 
-        static::assertEquals(['step1', 'step2'], $workflow->getExecutionSteps());
         static::assertEquals(2, $value);
     }
 
@@ -67,20 +84,21 @@ class WorkflowTest extends TestCase
         $workflow = new \Workflow\Workflow();
 
         $context = new \Workflow\Context();
-        $context->assign('a', 1);
+        $context->assign('decision', 'step4');
+        $context->assign('success', true);
+        $context->assign('failed', false);
 
         $workflow->addStep((new \Workflow\Step('step1')));
         $workflow->addStep((new \Workflow\Step('step2'))->withAction(new \Workflow\Step\ActionImplementation\ConditionalJump([
-            new \Workflow\Step\Decision(new \Workflow\Step\Condition('${a !==  1}'), \Workflow\Step::END_STEP_NAME),
-            new \Workflow\Step\Decision(new \Workflow\Step\Condition('${a ===  1}'), 'step4'),
+            new \Workflow\Step\Decision(fn (\Workflow\Context $context): bool => $context->getVariableValue('decision') === 'step4', 'step4'),
         ])));
-        $workflow->addStep(new \Workflow\Step('step3'));
-        $workflow->addStep(new \Workflow\Step('step4'));
+        $workflow->addStep((new \Workflow\Step('step3'))->withExitAction(new ReturnValue('failed')));
+        $workflow->addStep((new \Workflow\Step('step4'))->withExitAction(new ReturnValue('success')));
 
 
-        $workflow->execute($context);
+        $result = $workflow->execute($context);
 
-        static::assertEquals(['step1', 'step2', 'step4'], $workflow->getExecutionSteps());
+        static::assertTrue($result);
 
     }
 
@@ -91,19 +109,15 @@ class WorkflowTest extends TestCase
         $context = new \Workflow\Context();
         $context->assign('a', 1);
 
-        $workflow->addStep((new \Workflow\Step('step1')));
-        $workflow->addStep((new \Workflow\Step('step2'))->withAction(new \Workflow\Step\ActionImplementation\VariableAssigment([
+        $workflow->addStep((new \Workflow\Step('step1'))->withAction(new \Workflow\Step\ActionImplementation\VariableAssigment([
             'test' => 123,
             'test2' => 3,
-            'test3' => '${ test  - test2}',
-            'test4' => '${ (string)test  . (string)test2}'
+            'test3' => fn (\Workflow\Context $context): int => $context->getVariableValue('test') - $context->getVariableValue('test2'),
+            'test4' => fn (\Workflow\Context $context): string => $context->getVariableValue('test') . $context->getVariableValue('test2'),
         ])));
-        $workflow->addStep(new \Workflow\Step('step3'));
-
 
         $workflow->execute($context);
 
-        static::assertEquals(['step1', 'step2', 'step3'], $workflow->getExecutionSteps());
 
         static::assertEquals(123, $context->getVariableValue('test'));
         static::assertEquals(120, $context->getVariableValue('test3'));

@@ -14,10 +14,12 @@ final class VariableAssigment implements Action
 
     public function execute(Context $context): mixed
     {
-        $valueEvaluator = new Evaluator(['+', '-', '*', '/', '.']);
         foreach ($this->assignments as $key => $value) {
+            if (is_callable($value)) {
+                $value = $value($context);
+            }
 
-            $context->assign($key, $valueEvaluator->evaluate($value, $context));
+            $context->assign($key, $value);
         }
 
         return null;
