@@ -1,4 +1,10 @@
 steps:
-  - step1
-  - step2
-  - step3
+  - step1:
+  - step3:
+      assign:
+        a: 1
+        b: ${$a + 1}
+        c: "String with value"
+        d: ${$c . " = " . (string)$b}
+  - step2:
+      return: d

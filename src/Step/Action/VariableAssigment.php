@@ -1,10 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Workflow\Step\ActionImplementation;
+namespace Workflow\Step\Action;
 
 use Workflow\Context;
-use Workflow\Step\Action;
-use Workflow\Evaluator;
 
 final class VariableAssigment implements Action
 {

@@ -4,6 +4,7 @@ namespace Workflow;
 
 final class Workflow
 {
+    /** @var Step[] */
     private array $steps = [];
 
     private string $currentStep;
@@ -26,14 +27,6 @@ final class Workflow
         return $this;
     }
 
-    public function getStep(string $stepName): Step
-    {
-        if (!isset($this->steps[$stepName])) {
-            throw new \RuntimeException('Step with ' . $stepName . ' was not added yet');
-        }
-        return $this->steps[$stepName];
-    }
-
     public function execute(Context $context): mixed
     {
         while ($this->currentStep !== Step::END_STEP_NAME) {
@@ -51,7 +44,7 @@ final class Workflow
         $this->currentStep = array_key_first($this->steps);
     }
 
-    private function setCurrentStep(string $stepName)
+    private function setCurrentStep(string $stepName): void
     {
         if ($stepName === '') {
             $stepNames = array_keys($this->steps);

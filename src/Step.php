@@ -10,26 +10,26 @@ final class  Step
 {
     public const END_STEP_NAME = 'end';
     private string $name;
-    private Action $action;
-    private ExitAction $exitAction;
+    private Action\Action $action;
+    private ExitAction\ExitAction $exitAction;
 
     #[Pure]
     public function __construct(string $name)
     {
         $this->name = $name;
-        $this->exitAction = new Step\ExitActionImplementation\Next();
-        $this->action = new Step\ActionImplementation\NoAction();
+        $this->exitAction = new ExitAction\Next();
+        $this->action = new Action\NoAction();
 
     }
 
-    public function withAction(Action $action): self
+    public function withAction(Action\Action $action): self
     {
         $this->action = $action;
         return $this;
     }
 
 
-    public function withExitAction(ExitAction $exitAction): self
+    public function withExitAction(ExitAction\ExitAction $exitAction): self
     {
         $this->exitAction = $exitAction;
         return $this;
@@ -43,7 +43,7 @@ final class  Step
 
     public function execute(Context $context): string
     {
-        if ($this->action instanceof Step\ActionImplementation\ConditionalJump) {
+        if ($this->action instanceof Step\Action\ConditionalJump) {
             return $this->action->execute($context);
         }
 

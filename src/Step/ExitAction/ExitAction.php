@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Workflow\Step;
+namespace Workflow\Step\ExitAction;
 
 use Workflow\Context;
 
