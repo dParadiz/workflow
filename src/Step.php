@@ -13,7 +13,6 @@ final class  Step
     private Action\Action $action;
     private ExitAction\ExitAction $exitAction;
 
-    #[Pure]
     public function __construct(string $name)
     {
         $this->name = $name;

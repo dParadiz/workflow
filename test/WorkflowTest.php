@@ -7,7 +7,7 @@ use Workflow\Step\ExitAction\ReturnValue;
 class WorkflowTest extends TestCase
 {
     // pipeline example
-    public function test_sequential_execution()
+    public function test_sequential_execution(): void
     {
         $context = new \Workflow\Context();
         $workflow = new \Workflow\Workflow();
@@ -19,12 +19,12 @@ class WorkflowTest extends TestCase
 
         $workflow->addStep((new \Workflow\Step('step2'))
             ->withAction(new \Workflow\Step\Action\VariableAssigment([
-                'a' => fn (\Workflow\Context $context) => $context->getVariableValue('a') . ' step2'
+                'a' => fn (\Workflow\Context $context) => $context->valueOf('a') . ' step2'
             ]))
         );
         $workflow->addStep((new \Workflow\Step('step3'))
             ->withAction(new \Workflow\Step\Action\VariableAssigment([
-                'a' => fn (\Workflow\Context $context) => $context->getVariableValue('a') . ' step3'
+                'a' => fn (\Workflow\Context $context) => $context->valueOf('a') . ' step3'
             ]))
             ->withExitAction(new ReturnValue('a'))
         );
@@ -35,7 +35,7 @@ class WorkflowTest extends TestCase
     }
 
 
-    public function test_controlled_flow_execution()
+    public function test_controlled_flow_execution(): void
     {
         $context = new \Workflow\Context();
         $workflow = new \Workflow\Workflow();
@@ -47,13 +47,13 @@ class WorkflowTest extends TestCase
         $step3 = new \Workflow\Step('step3');
         $step3->withAction(
             new \Workflow\Step\Action\VariableAssigment([
-                    'a' => fn (\Workflow\Context $context) => $context->getVariableValue('a') . ' step3']
+                    'a' => fn (\Workflow\Context $context) => $context->valueOf('a') . ' step3']
             ))->withExitAction(new Next('step2'));
 
         $step2 = new \Workflow\Step('step2');
         $step2->withAction(
             new \Workflow\Step\Action\VariableAssigment(
-                ['a' => fn (\Workflow\Context $context) => $context->getVariableValue('a') . ' step2']
+                ['a' => fn (\Workflow\Context $context) => $context->valueOf('a') . ' step2']
             ))->withExitAction(new ReturnValue('a'));
 
 
@@ -66,7 +66,7 @@ class WorkflowTest extends TestCase
         static::assertEquals('step1 step3 step2', $result);
     }
 
-    public function test_return_value()
+    public function test_return_value(): void
     {
         $context = new \Workflow\Context();
         $context->assign('a', 2);
@@ -79,7 +79,7 @@ class WorkflowTest extends TestCase
         static::assertEquals(2, $value);
     }
 
-    public function test_conditional_switch()
+    public function test_conditional_switch(): void
     {
         $workflow = new \Workflow\Workflow();
 
@@ -90,7 +90,7 @@ class WorkflowTest extends TestCase
 
         $workflow->addStep((new \Workflow\Step('step1')));
         $workflow->addStep((new \Workflow\Step('step2'))->withAction(new \Workflow\Step\Action\ConditionalJump([
-            new \Workflow\Step\Decision(fn (\Workflow\Context $context): bool => $context->getVariableValue('decision') === 'step4', 'step4'),
+            new \Workflow\Step\Decision(fn (\Workflow\Context $context): bool => $context->valueOf('decision') === 'step4', 'step4'),
         ])));
         $workflow->addStep((new \Workflow\Step('step3'))->withExitAction(new ReturnValue('failed')));
         $workflow->addStep((new \Workflow\Step('step4'))->withExitAction(new ReturnValue('success')));
@@ -102,7 +102,7 @@ class WorkflowTest extends TestCase
 
     }
 
-    public function test_variable_assigment()
+    public function test_variable_assigment(): void
     {
         $workflow = new \Workflow\Workflow();
 
@@ -112,15 +112,15 @@ class WorkflowTest extends TestCase
         $workflow->addStep((new \Workflow\Step('step1'))->withAction(new \Workflow\Step\Action\VariableAssigment([
             'test' => 123,
             'test2' => 3,
-            'test3' => fn (\Workflow\Context $context): int => $context->getVariableValue('test') - $context->getVariableValue('test2'),
-            'test4' => fn (\Workflow\Context $context): string => $context->getVariableValue('test') . $context->getVariableValue('test2'),
+            'test3' => fn (\Workflow\Context $context): int => $context->valueOf('test') - $context->valueOf('test2'),
+            'test4' => fn (\Workflow\Context $context): string => $context->valueOf('test') . $context->valueOf('test2'),
         ])));
 
         $workflow->execute($context);
 
 
-        static::assertEquals(123, $context->getVariableValue('test'));
-        static::assertEquals(120, $context->getVariableValue('test3'));
-        static::assertEquals(1233, $context->getVariableValue('test4'));
+        static::assertEquals(123, $context->valueOf('test'));
+        static::assertEquals(120, $context->valueOf('test3'));
+        static::assertEquals(1233, $context->valueOf('test4'));
     }
 }

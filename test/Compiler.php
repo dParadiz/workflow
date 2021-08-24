@@ -6,10 +6,10 @@ use Workflow\Context;
 class Compiler extends TestCase
 {
 
-    public function test_build_from_yaml()
+    public function test_build_from_yaml(): void
     {
         $compiler = new Workflow\Compiler\Compiler(
-            __DIR__ . '/tmp/workflow',
+            __DIR__ . '/../var/workflow',
             __DIR__ . '/config',
         );
 
@@ -18,7 +18,6 @@ class Compiler extends TestCase
         $builder = new \DI\ContainerBuilder();
 
         $builder->addDefinitions($definitions);
-        $builder->enableCompilation(__DIR__ . '/tmp/di');
         $di = $builder->build();
         $workflow = $di->get('implicit_step_ordering');
 

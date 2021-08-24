@@ -7,7 +7,10 @@ use PhpParser;
 final class ConfigurationInterpreter implements Interpreter
 {
 
-
+    /**
+     * @param array<string,string|array<string, string>> $config
+     * @return StepDefinition[]
+     */
     public function buildStepDefinition(array $config): array
     {
         $parser = (new PhpParser\ParserFactory)->create(PhpParser\ParserFactory::ONLY_PHP7);
@@ -18,7 +21,7 @@ final class ConfigurationInterpreter implements Interpreter
                 if ($node instanceof \PhpParser\Node\Expr\Variable) {
                     return new \PhpParser\Node\Expr\MethodCall(
                         new \PhpParser\Node\Expr\Variable('context'),
-                        'getVariableValue',
+                        'valueOf',
                         [
                             new \PhpParser\Node\Arg(new PhpParser\Node\Scalar\String_($node->name))
                         ]
@@ -33,67 +36,47 @@ final class ConfigurationInterpreter implements Interpreter
         foreach ($config['steps'] as $step) {
             $stepConfig = reset($step);
             $stepName = key($step); // must be string
-            $stepViewModel = [
-                'name' => $stepName,
-            ];
+            $stepDefinition = new StepDefinition();
+            $stepDefinition->name = $stepName;
 
+            $stepDefinition->next = $stepConfig['next'] ?? null;
+            $stepDefinition->return = $stepConfig['return'] ?? null;
 
-            if (isset($stepConfig['next'])) {
-                $stepViewModel['next'] = $stepConfig['next'];
-            }
-
-            if (isset($stepConfig['return'])) {
-                $stepViewModel['return'] = $stepConfig['return'];
-            }
-
-            if (isset($stepConfig['assign'])) {
-                $assignments = array_map(function (string $key, mixed $assigment) use ($parser, $contextVariables) {
-                    $isDynamicAssigment = is_string($assigment) && preg_match('/^\${(.*)}$/', $assigment, $matches);
-                    if ($isDynamicAssigment && isset($matches[1])) {
-                        $code = $matches[1];
-                        try {
-                            $ast = $parser->parse('<?php ' . $code . ';');
-                            $astContainsOnlyOneExpression = count($ast) === 1 && $ast[0] instanceof PhpParser\Node\Stmt\Expression;
-                            if (!$astContainsOnlyOneExpression) {
-                                throw new PhpParser\Error('Only one expression is allowed');
-                            }
-
-                            //var_dump($ast);
-                            $contextVariables->traverse($ast);
-
-                            //var_dump($ast);
-                            $prettyPrinter = new PhpParser\PrettyPrinter\Standard;
-                            $code = str_replace('<?php', '', $prettyPrinter->prettyPrintFile($ast));
-                            $code = preg_replace('/^(?:[\t ]*(?:\r?\n|\r))+/', '', $code);
-                            $code = rtrim($code, ';');
-
-
-                            return [
-                                'variableName' => $key,
-                                'variableValue' => 'fn (\Workflow\Context $context) => ' . $code
-                            ];
-
-                        } catch (PhpParser\Error $error) {
-                            echo "Parse error: {$error->getMessage()}\n";
-                            throw $error;
-                        }
-                    } else {
-                        if (is_string($assigment)) {
-                            $assigment = "'$assigment'";
+            foreach ($stepConfig['assign'] ?? [] as $key => $assigment) {
+                $isDynamicAssigment = is_string($assigment) && preg_match('/^\${(.*)}$/', $assigment, $matches);
+                if ($isDynamicAssigment && isset($matches[1])) {
+                    $code = $matches[1];
+                    try {
+                        $ast = $parser->parse('<?php ' . $code . ';');
+                        $astContainsOnlyOneExpression = count($ast) === 1 && $ast[0] instanceof PhpParser\Node\Stmt\Expression;
+                        if (!$astContainsOnlyOneExpression) {
+                            throw new PhpParser\Error('Only one expression is allowed');
                         }
 
-                        return [
-                            'variableName' => $key,
-                            'variableValue' => $assigment
-                        ];
+                        $contextVariables->traverse($ast);
 
+                        $prettyPrinter = new PhpParser\PrettyPrinter\Standard;
+                        $code = str_replace('<?php', '', $prettyPrinter->prettyPrintFile($ast));
+                        $code = preg_replace('/^(?:[\t ]*(?:\r?\n|\r))+/', '', $code);
+                        $code = rtrim($code, ';');
+
+
+                        $assigment = 'fn (\Workflow\Context $context) => ' . $code;
+
+                    } catch (PhpParser\Error $error) {
+                        echo "Parse error: {$error->getMessage()}\n";
+                        throw $error;
                     }
-                }, array_keys($stepConfig['assign']), $stepConfig['assign']);
+                } else if (is_string($assigment)) {
+                    $assigment = "'$assigment'";
 
-                $stepViewModel['assignments'] = $assignments;
+                }
+
+                $stepDefinition->assign[$key] = $assigment;
             }
 
-            $steps[] = $stepViewModel;
+
+            $steps[] = $stepDefinition;
         }
 
         return $steps;

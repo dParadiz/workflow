@@ -14,7 +14,7 @@ final class Compiler
     {
     }
 
-    public function compile(Interpreter $interpreter, bool $rebuild = false)
+    public function compile(Interpreter $interpreter, bool $rebuild = false): void
     {
         $code = [];
         $code[] = '<?php  declare(strict_types=1);';
@@ -40,20 +40,20 @@ final class Compiler
             $steps = $interpreter->buildStepDefinition($config);
             foreach ($steps as $step) {
                 $code[] = '        $workflow->addStep(';
-                $code[] = '            (new \Workflow\Step(\'' . $step['name'] . '\'))';
+                $code[] = '            (new \Workflow\Step(\'' . $step->name . '\'))';
 
-                if (isset($step['next'])) {
-                    $code[] = '                ->withExitAction(new \Workflow\Step\ExitAction\Next(\'' . $step['next'] . '\'))';
+                if ($step->next !== null) {
+                    $code[] = '                ->withExitAction(new \Workflow\Step\ExitAction\Next(\'' . $step->next . '\'))';
                 }
 
-                if (isset($step['return'])) {
-                    $code[] = '                ->withExitAction(new \Workflow\Step\ExitAction\ReturnValue(\'' . $step['return'] . '\'))';
+                if ($step->return !== null) {
+                    $code[] = '                ->withExitAction(new \Workflow\Step\ExitAction\ReturnValue(\'' . $step->return . '\'))';
                 }
 
-                if (isset($step['assignments']) && is_array($step['assignments']) && $step['assignments'] !== []) {
+                if ($step->assign !== []) {
                     $code[] = '                ->withAction(new \Workflow\Step\Action\VariableAssigment([';
-                    foreach ($step['assignments'] as $assigment) {
-                        $code[] = "                    '{$assigment['variableName']}' => {$assigment['variableValue']},";
+                    foreach ($step->assign as $key => $value) {
+                        $code[] = "                    '$key' => $value,";
                     }
                     $code[] = '        ]))';
                 }
@@ -76,7 +76,7 @@ final class Compiler
         return sprintf('%s/workflow.definitions.php', $this->compileDir);
     }
 
-    private function createCompilationDirectory(string $directory)
+    private function createCompilationDirectory(string $directory): void
     {
         if (!is_dir($directory) && !@mkdir($directory, 0777, true) && !is_dir($directory)) {
             throw new \InvalidArgumentException(sprintf('Compilation directory does not exist and cannot be created: %s.', $directory));

@@ -14,7 +14,7 @@ final class Context
         $this->data[$varName] = $value;
     }
 
-    public function getVariableValue(string $variable): mixed
+    public function valueOf(string $variable): mixed
     {
         return $this->data[$variable];
     }
