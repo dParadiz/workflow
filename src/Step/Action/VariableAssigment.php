@@ -6,6 +6,9 @@ use Workflow\Context;
 
 final class VariableAssigment implements Action
 {
+    /**
+     * @param array<string, callable|mixed> $assignments
+     */
     public function __construct(private array $assignments = [])
     {
     }

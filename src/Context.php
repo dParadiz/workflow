@@ -5,6 +5,7 @@ namespace Workflow;
 
 final class Context
 {
+    /** @var array<string,mixed> */
     private array $data = [];
     public mixed $return = null;
     public mixed $actionResult = null;

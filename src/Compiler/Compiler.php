@@ -37,7 +37,7 @@ final class Compiler
             $code[] = sprintf('    \'%s\' => \DI\factory(function (\Psr\Container\ContainerInterface $di) {', $configName);
             $code[] = '        $workflow = new \Workflow\Workflow();';
             $config = Yaml::parseFile($info->getPathname());
-            $steps = $interpreter->buildStepDefinition($config);
+            $steps = $interpreter->buildStepDefinition($config['steps'] ?? []);
             foreach ($steps as $step) {
                 $code[] = '        $workflow->addStep(';
                 $code[] = '            (new \Workflow\Step(\'' . $step->name . '\'))';

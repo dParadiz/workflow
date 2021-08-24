@@ -8,7 +8,7 @@ final class ConfigurationInterpreter implements Interpreter
 {
 
     /**
-     * @param array<string,string|array<string, string>> $config
+     * @param array<string,array> $config
      * @return StepDefinition[]
      */
     public function buildStepDefinition(array $config): array
@@ -33,9 +33,9 @@ final class ConfigurationInterpreter implements Interpreter
         });
 
         $steps = [];
-        foreach ($config['steps'] as $step) {
+        foreach ($config as $step) {
             $stepConfig = reset($step);
-            $stepName = key($step); // must be string
+            $stepName = (string)key($step); // must be string
             $stepDefinition = new StepDefinition();
             $stepDefinition->name = $stepName;
 
@@ -45,9 +45,10 @@ final class ConfigurationInterpreter implements Interpreter
             foreach ($stepConfig['assign'] ?? [] as $key => $assigment) {
                 $isDynamicAssigment = is_string($assigment) && preg_match('/^\${(.*)}$/', $assigment, $matches);
                 if ($isDynamicAssigment && isset($matches[1])) {
-                    $code = $matches[1];
+                    $code = (string)$matches[1];
                     try {
-                        $ast = $parser->parse('<?php ' . $code . ';');
+                        $ast = (array)$parser->parse('<?php ' . $code . ';');
+
                         $astContainsOnlyOneExpression = count($ast) === 1 && $ast[0] instanceof PhpParser\Node\Stmt\Expression;
                         if (!$astContainsOnlyOneExpression) {
                             throw new PhpParser\Error('Only one expression is allowed');
@@ -56,8 +57,8 @@ final class ConfigurationInterpreter implements Interpreter
                         $contextVariables->traverse($ast);
 
                         $prettyPrinter = new PhpParser\PrettyPrinter\Standard;
-                        $code = str_replace('<?php', '', $prettyPrinter->prettyPrintFile($ast));
-                        $code = preg_replace('/^(?:[\t ]*(?:\r?\n|\r))+/', '', $code);
+                        $code = (string)str_replace('<?php', '', $prettyPrinter->prettyPrintFile($ast));
+                        $code = (string)preg_replace('/^(?:[\t ]*(?:\r?\n|\r))+/', '', $code);
                         $code = rtrim($code, ';');
 
 

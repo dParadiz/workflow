@@ -11,7 +11,7 @@ final class Workflow
 
     public function __construct()
     {
-        $this->steps[Step::END_STEP_NAME] = null;
+        $this->steps[Step::END_STEP_NAME] = new Step(Step::END_STEP_NAME);
         $this->currentStep = Step::END_STEP_NAME;
     }
 
@@ -21,7 +21,7 @@ final class Workflow
 
         $this->steps[$step->getName()] = $step;
 
-        $this->steps[Step::END_STEP_NAME] = null;
+        $this->steps[Step::END_STEP_NAME] = new Step(Step::END_STEP_NAME);
 
         $this->currentStep = array_key_first($this->steps);
         return $this;
@@ -37,11 +37,6 @@ final class Workflow
         }
 
         return $context->return;
-    }
-
-    public function reset(): void
-    {
-        $this->currentStep = array_key_first($this->steps);
     }
 
     private function setCurrentStep(string $stepName): void
