@@ -11,7 +11,8 @@ final class ConditionalJump implements Action
      * @param Decision[] $decisions
      */
     public function __construct(
-        private array $decisions = []
+        private array  $decisions = [],
+        private string $defaultStep = ''
     )
     {
     }
@@ -24,6 +25,6 @@ final class ConditionalJump implements Action
             }
         }
 
-        return '';
+        return $this->defaultStep;
     }
 }

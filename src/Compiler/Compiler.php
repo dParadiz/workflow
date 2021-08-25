@@ -42,7 +42,7 @@ final class Compiler
                 $code[] = '        $workflow->addStep(';
                 $code[] = '            (new \Workflow\Step(\'' . $step->name . '\'))';
 
-                if ($step->next !== null) {
+                if ($step->next !== null && $step->switch === []) {
                     $code[] = '                ->withExitAction(new \Workflow\Step\ExitAction\Next(\'' . $step->next . '\'))';
                 }
 
@@ -55,21 +55,26 @@ final class Compiler
                     foreach ($step->assign as $key => $value) {
                         $code[] = "                    '$key' => $value,";
                     }
-                    $code[] = '        ]))';
+                    $code[] = '                ]))';
                 }
 
 
                 if ($step->switch !== []) {
-                    $code[] = '                ->withAction(new \Workflow\Step\Action\ConditionalJump([';
+                    $code[] = '                ->withAction(new \Workflow\Step\Action\ConditionalJump(';
+                    $code[] = '                    [';
 
                     foreach ($step->switch as $value) {
-                        $code[] = '                    new \Workflow\Step\Decision(';
-                        $code[] = '                        ' . $value->condition . ',';
-                        $code[] = '                        \'' . $value->nextStep .'\'';
-                        $code[] = "                    ),";
+                        $code[] = '                        new \Workflow\Step\Decision(';
+                        $code[] = '                            ' . $value->condition . ',';
+                        $code[] = '                            \'' . $value->nextStep . '\'';
+                        $code[] = '                        ),';
                     }
 
-                    $code[] = '            ]))';
+                    $code[] = '                    ],';
+                    if ($step->next !== null) {
+                        $code[] = '                    \'' . $step->next . '\',';
+                    }
+                    $code[] = '                ))';
                 }
 
                 $code[] = '        );';
