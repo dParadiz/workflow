@@ -43,7 +43,15 @@ final class  Step
     public function execute(Context $context): string
     {
         if ($this->action instanceof Step\Action\ConditionalJump) {
-            return $this->action->execute($context);
+            $nextStep = $this->action->execute($context);
+
+            if ($nextStep === ''
+                && $this->exitAction instanceof ExitAction\Next
+                && $this->exitAction->execute($context) !== '') {
+                $nextStep = $this->exitAction->execute($context);
+            }
+
+            return $nextStep;
         }
 
         $context->actionResult = $this->action->execute($context);

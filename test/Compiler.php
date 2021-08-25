@@ -19,12 +19,21 @@ class Compiler extends TestCase
 
         $builder->addDefinitions($definitions);
         $di = $builder->build();
-        $workflow = $di->get('implicit_step_ordering');
+        /** @var \Workflow\Workflow $workflow */
+        $workflow = $di->get('workflow-example');
 
-        $result = $workflow->execute(new Context());
-
+        $context = new Context();
+        $context->assign('a', 1);
+        $result = $workflow->execute($context);
 
         self::assertEquals('String with value = 2', $result);
+
+
+        $context = new Context();
+        $context->assign('a', 3);
+        $result = $workflow->execute($context);
+
+        self::assertEquals('Value is 3', $result);
 
     }
 

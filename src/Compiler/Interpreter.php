@@ -1,4 +1,4 @@
-<?php  declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Workflow\Compiler;
 
@@ -6,7 +6,7 @@ interface Interpreter
 {
     /**
      * @param array<string,string|array<string, string>> $config
-     * @return StepDefinition[]
+     * @return Definition\Step[]
      */
     public function buildStepDefinition(array $config): array;
 }

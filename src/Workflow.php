@@ -36,6 +36,9 @@ final class Workflow
             $this->setCurrentStep($nextStep);
         }
 
+        // set current step to first one to be able to rerun the workflow
+        $this->currentStep = (string)array_key_first($this->steps);
+
         return $context->return;
     }
 

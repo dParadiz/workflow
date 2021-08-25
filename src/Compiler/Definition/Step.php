@@ -1,8 +1,8 @@
 <?php
 
-namespace Workflow\Compiler;
+namespace Workflow\Compiler\Definition;
 
-final class StepDefinition
+final class Step
 {
     public string $name = '';
     public ?string $next = null;
@@ -10,4 +10,7 @@ final class StepDefinition
 
     /** @var array<string, string> */
     public array $assign = [];
+
+    /** @var Decision[] */
+    public array $switch = [];
 }

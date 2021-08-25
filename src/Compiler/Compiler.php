@@ -58,6 +58,20 @@ final class Compiler
                     $code[] = '        ]))';
                 }
 
+
+                if ($step->switch !== []) {
+                    $code[] = '                ->withAction(new \Workflow\Step\Action\ConditionalJump([';
+
+                    foreach ($step->switch as $value) {
+                        $code[] = '                    new \Workflow\Step\Decision(';
+                        $code[] = '                        ' . $value->condition . ',';
+                        $code[] = '                        \'' . $value->nextStep .'\'';
+                        $code[] = "                    ),";
+                    }
+
+                    $code[] = '            ]))';
+                }
+
                 $code[] = '        );';
             }
 
