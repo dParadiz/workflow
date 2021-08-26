@@ -2,7 +2,7 @@
 
 namespace Workflow\Compiler\Definition;
 
-class Decision
+final class Decision
 {
 
     public function __construct(public string $condition, public string $nextStep)

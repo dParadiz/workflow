@@ -10,9 +10,9 @@ final class Context
     public mixed $return = null;
     public mixed $actionResult = null;
 
-    public function assign(string $varName, mixed $value): void
+    public function assign(string $variable, mixed $value): void
     {
-        $this->data[$varName] = $value;
+        $this->data[$variable] = $value;
     }
 
     public function valueOf(string $variable): mixed
@@ -20,8 +20,4 @@ final class Context
         return $this->data[$variable];
     }
 
-    public function isVariableSet(string $variable): bool
-    {
-        return isset($this->data[$variable]);
-    }
 }

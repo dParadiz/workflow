@@ -1,0 +1,21 @@
+steps:
+  - step1:
+      call:
+        class: Increment
+        args:
+          value: ${$a}
+          incrementBy: 2
+      result: a
+  - step2:
+      switch:
+        - condition: ${$a === 3}
+          step: step4
+  - step3:
+      assign:
+        d: ${false}
+      next: step5
+  - step4:
+      assign:
+        d: ${true}
+  - step5:
+      return: d

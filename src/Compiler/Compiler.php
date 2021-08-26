@@ -42,12 +42,16 @@ final class Compiler
                 $code[] = '        $workflow->addStep(';
                 $code[] = '            (new \Workflow\Step(\'' . $step->name . '\'))';
 
-                if ($step->next !== null && $step->switch === []) {
+                if ($step->next !== '') {
                     $code[] = '                ->withExitAction(new \Workflow\Step\ExitAction\Next(\'' . $step->next . '\'))';
                 }
 
-                if ($step->return !== null) {
+                if ($step->return !== '') {
                     $code[] = '                ->withExitAction(new \Workflow\Step\ExitAction\ReturnValue(\'' . $step->return . '\'))';
+                }
+
+                if ($step->result !== '') {
+                    $code[] = '                ->withExitAction(new \Workflow\Step\ExitAction\AssignResult(\'' . $step->result . '\'))';
                 }
 
                 if ($step->assign !== []) {
@@ -77,11 +81,26 @@ final class Compiler
                     $code[] = '                ))';
                 }
 
+                if ($step->call !== null) {
+                    $code[] = '                ->withAction(new \Workflow\Step\Action\Call(';
+                    $code[] = '                    $di,';
+                    $code[] = '                    \'' . $step->call->className . '\',';
+                    $code[] = '                    [';
+                    foreach ($step->call->arguments as $key => $value) {
+                        $code[] = "                        '$key' => $value,";
+                    }
+                    $code[] = '                    ],';
+                    if ($step->call->method !== '') {
+                        $code[] = '                    \'' . $step->call->method . '\'';
+                    }
+                    $code[] = '                 ))';
+                }
+
                 $code[] = '        );';
             }
 
             $code[] = '        return $workflow;';
-            $code[] = '    }),';
+            $code[] = '    }), ';
 
         }
 
@@ -98,10 +117,10 @@ final class Compiler
     private function createCompilationDirectory(string $directory): void
     {
         if (!is_dir($directory) && !@mkdir($directory, 0777, true) && !is_dir($directory)) {
-            throw new \InvalidArgumentException(sprintf('Compilation directory does not exist and cannot be created: %s.', $directory));
+            throw new \InvalidArgumentException(sprintf('Compilation directory does not exist and cannot be created: %s . ', $directory));
         }
         if (!is_writable($directory)) {
-            throw new \InvalidArgumentException(sprintf('Compilation directory is not writable: %s.', $directory));
+            throw new \InvalidArgumentException(sprintf('Compilation directory is not writable: %s . ', $directory));
         }
     }
 
