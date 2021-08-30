@@ -1,12 +1,12 @@
 {
-  "name": "vendor_name/work-flow",
+  "name": "dparadiz/workflow",
   "description": "description",
   "minimum-stability": "stable",
-  "license": "proprietary",
+  "license": "MIT License",
   "authors": [
     {
       "name": "dparadiz",
-      "email": "email@example.com"
+      "email": "dparadiz@gmail.com"
     }
   ],
   "require": {

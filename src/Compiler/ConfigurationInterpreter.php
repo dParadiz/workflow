@@ -116,6 +116,10 @@ final class ConfigurationInterpreter implements Interpreter
                 public function leaveNode(PhpParser\Node $node)
                 {
                     if ($node instanceof \PhpParser\Node\Expr\Variable) {
+                        if (!is_string($node->name)) {
+                            throw new \RuntimeException('Only string node name are supported');
+                        }
+
                         return new \PhpParser\Node\Expr\ArrayDimFetch(
                             new PhpParser\Node\Expr\Variable('c'),
                             new PhpParser\Node\Scalar\String_($node->name)

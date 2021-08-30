@@ -3,8 +3,8 @@ steps:
       call:
         class: Increment
         args:
-          value: ${$a}
-          incrementBy: 2
+          - ${$a}
+          - 2
       result: a
   - step2:
       switch:

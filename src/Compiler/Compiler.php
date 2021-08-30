@@ -83,11 +83,10 @@ final class Compiler
 
                 if ($step->call !== null) {
                     $code[] = '                ->withAction(new \Workflow\Step\Action\Call(';
-                    $code[] = '                    $di,';
-                    $code[] = '                    \'' . $step->call->className . '\',';
+                    $code[] = '                    $di->get(\''. $step->call->className .'\'),';
                     $code[] = '                    [';
-                    foreach ($step->call->arguments as $key => $value) {
-                        $code[] = "                        '$key' => $value,";
+                    foreach ($step->call->arguments as $value) {
+                        $code[] = "                       $value,";
                     }
                     $code[] = '                    ],';
                     if ($step->call->method !== '') {
