@@ -3,21 +3,8 @@
 namespace Workflow;
 
 
-final class Context
+final class Context extends \ArrayObject
 {
-    /** @var array<string,mixed> */
-    private array $data = [];
     public mixed $return = null;
     public mixed $actionResult = null;
-
-    public function assign(string $variable, mixed $value): void
-    {
-        $this->data[$variable] = $value;
-    }
-
-    public function valueOf(string $variable): mixed
-    {
-        return $this->data[$variable];
-    }
-
 }

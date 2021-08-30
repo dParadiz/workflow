@@ -19,12 +19,12 @@ class WorkflowTest extends TestCase
 
         $workflow->addStep((new \Workflow\Step('step2'))
             ->withAction(new \Workflow\Step\Action\VariableAssigment([
-                'a' => fn (\Workflow\Context $context) => $context->valueOf('a') . ' step2'
+                'a' => fn (\Workflow\Context $context) => $context['a'] . ' step2'
             ]))
         );
         $workflow->addStep((new \Workflow\Step('step3'))
             ->withAction(new \Workflow\Step\Action\VariableAssigment([
-                'a' => fn (\Workflow\Context $context) => $context->valueOf('a') . ' step3'
+                'a' => fn (\Workflow\Context $context) => $context['a'] . ' step3'
             ]))
             ->withExitAction(new ReturnValue('a'))
         );
@@ -47,13 +47,13 @@ class WorkflowTest extends TestCase
         $step3 = new \Workflow\Step('step3');
         $step3->withAction(
             new \Workflow\Step\Action\VariableAssigment([
-                    'a' => fn (\Workflow\Context $context) => $context->valueOf('a') . ' step3']
+                    'a' => fn (\Workflow\Context $context) => $context['a'] . ' step3']
             ))->withExitAction(new Next('step2'));
 
         $step2 = new \Workflow\Step('step2');
         $step2->withAction(
             new \Workflow\Step\Action\VariableAssigment(
-                ['a' => fn (\Workflow\Context $context) => $context->valueOf('a') . ' step2']
+                ['a' => fn (\Workflow\Context $context) => $context['a'] . ' step2']
             ))->withExitAction(new ReturnValue('a'));
 
 
@@ -69,7 +69,7 @@ class WorkflowTest extends TestCase
     public function test_return_value(): void
     {
         $context = new \Workflow\Context();
-        $context->assign('a', 2);
+        $context['a'] = 2;
         $workflow = new \Workflow\Workflow();
 
         $workflow->addStep((new \Workflow\Step('step1'))->withExitAction(new ReturnValue('a')));
@@ -84,13 +84,13 @@ class WorkflowTest extends TestCase
         $workflow = new \Workflow\Workflow();
 
         $context = new \Workflow\Context();
-        $context->assign('decision', 'step4');
-        $context->assign('success', true);
-        $context->assign('failed', false);
+        $context['decision'] = 'step4';
+        $context['success'] = true;
+        $context['failed'] = false;
 
         $workflow->addStep((new \Workflow\Step('step1')));
         $workflow->addStep((new \Workflow\Step('step2'))->withAction(new \Workflow\Step\Action\ConditionalJump([
-            new \Workflow\Step\Decision(fn (\Workflow\Context $context): bool => $context->valueOf('decision') === 'step4', 'step4'),
+            new \Workflow\Step\Decision(fn (\Workflow\Context $context): bool => $context['decision'] === 'step4', 'step4'),
         ])));
         $workflow->addStep((new \Workflow\Step('step3'))->withExitAction(new ReturnValue('failed')));
         $workflow->addStep((new \Workflow\Step('step4'))->withExitAction(new ReturnValue('success')));
@@ -107,20 +107,20 @@ class WorkflowTest extends TestCase
         $workflow = new \Workflow\Workflow();
 
         $context = new \Workflow\Context();
-        $context->assign('a', 1);
+        $context['a'] = 1;
 
         $workflow->addStep((new \Workflow\Step('step1'))->withAction(new \Workflow\Step\Action\VariableAssigment([
             'test' => 123,
             'test2' => 3,
-            'test3' => fn (\Workflow\Context $context): int => $context->valueOf('test') - $context->valueOf('test2'),
-            'test4' => fn (\Workflow\Context $context): string => $context->valueOf('test') . $context->valueOf('test2'),
+            'test3' => fn (\Workflow\Context $context): int => $context['test'] - $context['test2'],
+            'test4' => fn (\Workflow\Context $context): string => $context['test'] . $context['test2'],
         ])));
 
         $workflow->execute($context);
 
 
-        static::assertEquals(123, $context->valueOf('test'));
-        static::assertEquals(120, $context->valueOf('test3'));
-        static::assertEquals(1233, $context->valueOf('test4'));
+        static::assertEquals(123, $context['test']);
+        static::assertEquals(120, $context['test3']);
+        static::assertEquals(1233, $context['test4']);
     }
 }

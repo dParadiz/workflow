@@ -14,7 +14,7 @@ final class ReturnValue implements ExitAction
 
     public function execute(Context $context): string
     {
-        $context->return = $context->valueOf($this->variable);
+        $context->return = $context[$this->variable];
         return Step::END_STEP_NAME;
     }
 

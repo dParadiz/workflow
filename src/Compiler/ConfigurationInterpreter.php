@@ -116,12 +116,9 @@ final class ConfigurationInterpreter implements Interpreter
                 public function leaveNode(PhpParser\Node $node)
                 {
                     if ($node instanceof \PhpParser\Node\Expr\Variable) {
-                        return new \PhpParser\Node\Expr\MethodCall(
-                            new \PhpParser\Node\Expr\Variable('c'),
-                            'valueOf',
-                            [
-                                new \PhpParser\Node\Arg(new PhpParser\Node\Scalar\String_($node->name))
-                            ]
+                        return new \PhpParser\Node\Expr\ArrayDimFetch(
+                            new PhpParser\Node\Expr\Variable('c'),
+                            new PhpParser\Node\Scalar\String_($node->name)
                         );
                     }
                     return $node;

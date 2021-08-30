@@ -20,7 +20,7 @@ final class VariableAssigment implements Action
                 $value = $value($context);
             }
 
-            $context->assign($key, $value);
+            $context[$key] = $value;
         }
 
         return null;

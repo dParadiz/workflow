@@ -12,7 +12,7 @@ final class AssignResult implements ExitAction
 
     public function execute(Context $context): string
     {
-        $context->assign($this->variable, $context->actionResult);
+        $context[$this->variable] = $context->actionResult;
 
         return '';
     }
