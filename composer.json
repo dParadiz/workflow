@@ -26,5 +26,9 @@
     "phpunit/phpunit": "^9",
     "php-di/php-di": "^6.3",
     "phpstan/phpstan": "^0.12.96"
+  },
+  "scripts": {
+    "test": "./vendor/bin/phpunit test",
+    "phpstan": "./vendor/bin/phpstan analyze src -l 8 test"
   }
 }
