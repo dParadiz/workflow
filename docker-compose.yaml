@@ -7,19 +7,3 @@ services:
     user: $UID:$GID
     volumes:
       - .:/usr/src/workflow
-
-  tests:
-    image: composer:2.1.6
-    working_dir: /usr/src/workflow
-    user: $UID:$GID
-    volumes:
-      - .:/usr/src/workflow
-    command: ./vendor/bin/phpunit ./test
-
-  install:
-    image: composer:2.1.6
-    working_dir: /usr/src/workflow
-    user: $UID:$GID
-    volumes:
-      - .:/usr/src/workflow
-    command: composer install
