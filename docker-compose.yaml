@@ -1,9 +1,0 @@
-version: "3.0"
-
-services:
-  php-cli:
-    image: composer:2.1.6
-    working_dir: /usr/src/workflow
-    user: $UID:$GID
-    volumes:
-      - .:/usr/src/workflow

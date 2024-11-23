@@ -4,7 +4,7 @@ namespace Workflow\Step\ExitAction;
 
 use Workflow\Context;
 
-final class AssignResult implements ExitAction
+final readonly class AssignResult implements ExitAction
 {
     public function __construct(private string $variable)
     {

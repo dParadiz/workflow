@@ -1,10 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Workflow\Step\Action;
 
 use Workflow\Context;
 
-final class Call implements Action
+final readonly class Call implements Action
 {
     /**
      * @param object $executor

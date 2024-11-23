@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 use Workflow\Step\ExitAction\Next;
@@ -14,16 +14,16 @@ class WorkflowTest extends TestCase
 
         $workflow->addStep(
             (new \Workflow\Step('step1'))
-                ->withAction(new \Workflow\Step\Action\VariableAssigment(['a' => 'step1']))
+                ->withAction(new \Workflow\Step\Action\VariableAssignment(['a' => 'step1']))
         );
 
         $workflow->addStep((new \Workflow\Step('step2'))
-            ->withAction(new \Workflow\Step\Action\VariableAssigment([
+            ->withAction(new \Workflow\Step\Action\VariableAssignment([
                 'a' => fn (\Workflow\Context $context) => $context['a'] . ' step2'
             ]))
         );
         $workflow->addStep((new \Workflow\Step('step3'))
-            ->withAction(new \Workflow\Step\Action\VariableAssigment([
+            ->withAction(new \Workflow\Step\Action\VariableAssignment([
                 'a' => fn (\Workflow\Context $context) => $context['a'] . ' step3'
             ]))
             ->withExitAction(new ReturnValue('a'))
@@ -41,18 +41,18 @@ class WorkflowTest extends TestCase
         $workflow = new \Workflow\Workflow();
 
         $step1 = new \Workflow\Step('step1');
-        $step1->withAction(new \Workflow\Step\Action\VariableAssigment(['a' => 'step1']))
+        $step1->withAction(new \Workflow\Step\Action\VariableAssignment(['a' => 'step1']))
             ->withExitAction(new Next('step3'));
 
         $step3 = new \Workflow\Step('step3');
         $step3->withAction(
-            new \Workflow\Step\Action\VariableAssigment([
+            new \Workflow\Step\Action\VariableAssignment([
                     'a' => fn (\Workflow\Context $context) => $context['a'] . ' step3']
             ))->withExitAction(new Next('step2'));
 
         $step2 = new \Workflow\Step('step2');
         $step2->withAction(
-            new \Workflow\Step\Action\VariableAssigment(
+            new \Workflow\Step\Action\VariableAssignment(
                 ['a' => fn (\Workflow\Context $context) => $context['a'] . ' step2']
             ))->withExitAction(new ReturnValue('a'));
 
@@ -102,14 +102,14 @@ class WorkflowTest extends TestCase
 
     }
 
-    public function test_variable_assigment(): void
+    public function test_variable_assignment(): void
     {
         $workflow = new \Workflow\Workflow();
 
         $context = new \Workflow\Context();
         $context['a'] = 1;
 
-        $workflow->addStep((new \Workflow\Step('step1'))->withAction(new \Workflow\Step\Action\VariableAssigment([
+        $workflow->addStep((new \Workflow\Step('step1'))->withAction(new \Workflow\Step\Action\VariableAssignment([
             'test' => 123,
             'test2' => 3,
             'test3' => fn (\Workflow\Context $context): int => $context['test'] - $context['test2'],

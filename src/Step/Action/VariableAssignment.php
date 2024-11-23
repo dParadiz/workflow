@@ -4,7 +4,7 @@ namespace Workflow\Step\Action;
 
 use Workflow\Context;
 
-final class VariableAssigment implements Action
+final readonly class VariableAssignment implements Action
 {
     /**
      * @param array<string, callable|mixed> $assignments

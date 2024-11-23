@@ -4,7 +4,7 @@ namespace Workflow\Step\ExitAction;
 
 use Workflow\Context;
 
-final class Next implements ExitAction
+final readonly class Next implements ExitAction
 {
     public function __construct(private string $nextStepName = '')
     {

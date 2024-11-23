@@ -5,7 +5,7 @@ namespace Workflow\Step\Action;
 use Workflow\Context;
 use Workflow\Step\Decision;
 
-final class ConditionalJump implements Action
+final readonly class ConditionalJump implements Action
 {
     /**
      * @param Decision[] $decisions
